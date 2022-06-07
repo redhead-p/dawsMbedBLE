@@ -1,4 +1,4 @@
-#  DAWS Motor Control Library
+#  DAWS BLE Communications Library
 
 ---
 
