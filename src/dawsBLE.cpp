@@ -481,7 +481,7 @@ void BLEcore::onDisconnectionComplete(const ble::DisconnectionCompleteEvent& eve
 #if DEBUG
 
     Serial.println("Disconnected ");
-    Serial.println((const int)event.getReason());
+    //Serial.println((const uint8_t)event.getReason());
 
 #endif
     if (_periMode)
@@ -631,6 +631,10 @@ bool BLEcore::scan()
 {
     
     ble_error_t bleErr;
+#if DEBUG
+        Serial.println("Scan Requested");
+        Serial.flush();
+#endif
     
 
     bleErr = _gap.setScanParameters
@@ -647,28 +651,40 @@ bool BLEcore::scan()
     if (bleErr!= BLE_ERROR_NONE)
     {
 #if DEBUG
-        printf("Scan parameter error %d\n", bleErr);
+        Serial.print("Scan parameter error ");
+        Serial.println(bleErr);
+        Serial.flush();
 #endif
-        return(false);
+        return (false);
     }
+#if DEBUG
+    Serial.println("About to start scan");
+    Serial.flush();
+#endif
     bleErr = _gap.startScan(ble::scan_duration_t(1000));
 #if DEBUG
-    if (bleErr!= BLE_ERROR_NONE)
+    if (bleErr != BLE_ERROR_NONE)
     {
         Serial.print("Start scan fail: ");
         Serial.println(bleErr);
+        Serial.flush();
     }
     else
     {
         Serial.println("Scan started");
+        Serial.flush();
     }
 #endif
-    queueReport(BLE_SCAN_START, 0);
-    return(bleErr == BLE_ERROR_NONE);
+    if (bleErr == BLE_ERROR_NONE)
+    {
+        queueReport(BLE_SCAN_START, 0);
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
 }
-
-
-
 
 /**
  @brief Advertising report received call back
